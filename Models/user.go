@@ -3,15 +3,22 @@ package Models
 import "sync"
 
 type User struct {
-	id       string
-	eventIds []string
-	rwMutex  sync.RWMutex
+	id                string
+	eventIds          []string
+	userEventCounters []*UserEventCounter
+	rwMutex           sync.RWMutex
 }
 
 func (u *User) GetID() string {
 	defer u.rwMutex.RUnlock()
 	u.rwMutex.RLock()
 	return u.id
+}
+
+func (u *User) GetUserEventCounters() []*UserEventCounter {
+	defer u.rwMutex.RUnlock()
+	u.rwMutex.RLock()
+	return u.userEventCounters
 }
 
 func (u *User) GetEventIDs() []string {

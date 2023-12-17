@@ -19,7 +19,7 @@ func createUser(id string) (Models.User, error) {
 	return newUser, nil
 }
 
-func AddEventToUser(userId string, eventID string) (string, error) {
+func addEventToUser(userId string, eventID string) (string, error) {
 	var (
 		err  error
 		user Models.User

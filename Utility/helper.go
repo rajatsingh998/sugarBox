@@ -1,6 +1,10 @@
 package Utility
 
-import "github.com/google/uuid"
+import (
+	"errors"
+	"github.com/google/uuid"
+	"time"
+)
 
 func GenerateUUID() (string, error) {
 	var (
@@ -11,4 +15,18 @@ func GenerateUUID() (string, error) {
 		return "", err
 	}
 	return newId.String(), nil
+}
+
+func ConvertTimestampTo_YYYY_MM_DD(timeStamp int) (time.Time, error) {
+	var (
+		err        error
+		parsedTime time.Time
+	)
+	epochTime := time.Unix(int64(timeStamp), 0)
+	parsedTime, err = time.Parse("2006-01-02", epochTime.Format("2006-01-02"))
+	if err != nil {
+		err = errors.New("Encountered Error In Date Conversion ")
+		return time.Time{}, err
+	}
+	return parsedTime, nil
 }

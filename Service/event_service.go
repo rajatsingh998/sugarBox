@@ -13,12 +13,12 @@ const (
 	CommentEventType             = "comment"
 )
 
-func CreateEvent(userID string, eventType string, creationTime time.Time) (string, error) {
+func CreateEvent(userID string, eventType string, creationTime int) (string, error) {
 	var (
-		err   error
-		event Models.Event
-		user  Models.User
-		ok    bool
+		err       error
+		event     Models.Event
+		eventDate time.Time
+		ok        bool
 	)
 
 	if !createEventReqValidation(eventType) {
@@ -26,17 +26,27 @@ func CreateEvent(userID string, eventType string, creationTime time.Time) (strin
 		return "", err
 	}
 
-	if ok, user = getUserWithID(userID); !ok {
-		if user, err = createUser(userID); err != nil {
+	if ok, _ = getUserWithID(userID); !ok {
+		if _, err = createUser(userID); err != nil {
 			err = errors.New("User Creation Failed ")
 			return "", err
 		}
 	}
 
-	event = createNewEvent(eventType, creationTime)
+	eventDate, err = Utility.ConvertTimestampTo_YYYY_MM_DD(creationTime)
 
-	AddEventToUser(userID, event.GetEventType())
+	if err != nil {
+		return "", err
+	}
 
+	event = createNewEvent(eventType, eventDate)
+
+	if _, err = addEventToUser(userID, event.GetID()); err != nil {
+		err = errors.New("Encountered Error While Adding Event To The User ")
+		return "", err
+	}
+
+	return event.GetID(), nil
 }
 
 func createNewEvent(eventType string, creationTime time.Time) Models.Event {

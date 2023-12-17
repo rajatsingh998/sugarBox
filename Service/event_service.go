@@ -16,7 +16,7 @@ const (
 func CreateEvent(userID string, eventType string, creationTime int) (string, error) {
 	var (
 		err       error
-		event     Models.Event
+		event     *Models.Event
 		eventDate time.Time
 		ok        bool
 	)
@@ -41,7 +41,7 @@ func CreateEvent(userID string, eventType string, creationTime int) (string, err
 
 	event = createNewEvent(eventType, eventDate)
 
-	if _, err = addEventToUser(userID, event.GetID()); err != nil {
+	if _, err = addEventToUser(userID, event); err != nil {
 		err = errors.New("Encountered Error While Adding Event To The User ")
 		return "", err
 	}
@@ -49,14 +49,14 @@ func CreateEvent(userID string, eventType string, creationTime int) (string, err
 	return event.GetID(), nil
 }
 
-func createNewEvent(eventType string, creationTime time.Time) Models.Event {
+func createNewEvent(eventType string, creationTime time.Time) *Models.Event {
 	newEvent := Models.Event{}
 	newEventID, _ := Utility.GenerateUUID()
 	newEvent.SetID(newEventID)
 	newEvent.SetEventType(eventType)
 	newEvent.SetCreationTime(creationTime)
 	eventDataSetInstance.SetEvent(&newEvent)
-	return newEvent
+	return &newEvent
 }
 
 func createEventReqValidation(eventType string) bool {

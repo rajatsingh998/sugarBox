@@ -27,6 +27,11 @@ func (u *User) GetEventIDs() []string {
 	return u.eventIds
 }
 
+func (u *User) SetUserEventCounter(userEventCounter *UserEventCounter) {
+	defer u.rwMutex.RUnlock()
+	u.rwMutex.RLock()
+	u.userEventCounters = append(u.userEventCounters, userEventCounter)
+}
 func (u *User) SetID(id string) {
 	defer u.rwMutex.RUnlock()
 	u.rwMutex.RLock()

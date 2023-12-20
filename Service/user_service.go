@@ -28,8 +28,7 @@ func addEventToUser(user *Models.User, event *Models.Event) (int, error) {
 		ok  bool
 	)
 
-	/*Todo:: We can make updating event counter and setting event id to user in single
-	Todo::  transaction to avoid any inconsistency*/
+	/*Todo:: We can make updating_event_counter and setting event id to the user in single transaction to avoid any inconsistency*/
 	if ok = updateEventCounterForUser(user, event); !ok {
 		err = errors.New("Error Encountered While Updating The Count ")
 		return 0, err
@@ -98,7 +97,6 @@ func ListOfUsersWithEventCounters() []Payload.UserDetailsResp {
 
 	for _, user := range userDataSetInstance.GetUsers() {
 		allCounterForUser := getAllEventCountersForUser(user)
-		//fmt.Println("user:", user.GetID(), " ", allCounterForUser)
 		userDetails = append(userDetails, allCounterForUser...)
 	}
 	return userDetails
@@ -110,8 +108,6 @@ func getAllEventCountersForUser(user *Models.User) []Payload.UserDetailsResp {
 	)
 
 	for _, eventCounter := range user.GetUserEventCounters() {
-		fmt.Println("===================================")
-
 		userDetail := Payload.UserDetailsResp{
 			UserID:       user.GetID(),
 			Date:         fmt.Sprint(eventCounter.GetDate().Date()),
@@ -119,11 +115,6 @@ func getAllEventCountersForUser(user *Models.User) []Payload.UserDetailsResp {
 			Comment:      eventCounter.GetCommentCount(),
 			Post:         eventCounter.GetPostCount(),
 		}
-		fmt.Println("UserID", userDetail.UserID)
-		fmt.Println("Date", userDetail.Date)
-		fmt.Println("like", userDetail.LikeReceived)
-		fmt.Println("comment", userDetail.Comment)
-		fmt.Println("post", userDetail.Post)
 		userDetails = append(userDetails, userDetail)
 	}
 

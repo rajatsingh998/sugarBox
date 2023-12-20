@@ -39,10 +39,11 @@ func HandleAndExecuteInput() {
 	for _, req := range eventCreationReq {
 		err := Controller.ProcessInput(req)
 		if err != nil {
-			fmt.Println("err", err)
+			fmt.Println("error:", err)
 		}
 	}
 
+	//Once the input execution will be done without any err, the flow will go to write json file
 	HandleAndExecuteOutput()
 
 }

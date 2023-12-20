@@ -2,13 +2,12 @@ package Models
 
 import (
 	"sync"
-	"time"
 )
 
 type Event struct {
 	id           string
 	eventType    string
-	creationTime time.Time
+	creationTime int64
 	userID       int
 	rwMutex      sync.RWMutex
 }
@@ -30,7 +29,7 @@ func (e *Event) GetEventType() string {
 	return e.eventType
 }
 
-func (e *Event) GetCreationTime() time.Time {
+func (e *Event) GetCreationTime() int64 {
 	defer e.rwMutex.RUnlock()
 	e.rwMutex.RLock()
 	return e.creationTime
@@ -54,7 +53,7 @@ func (e *Event) SetEventType(eventType string) {
 	e.eventType = eventType
 }
 
-func (e *Event) SetCreationTime(creationTime time.Time) {
+func (e *Event) SetCreationTime(creationTime int64) {
 	defer e.rwMutex.RUnlock()
 	e.rwMutex.RLock()
 	e.creationTime = creationTime

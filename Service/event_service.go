@@ -5,7 +5,6 @@ import (
 	"sugarBox/DataHub"
 	"sugarBox/Models"
 	"sugarBox/Utility"
-	"time"
 )
 
 const (
@@ -16,11 +15,10 @@ const (
 
 func CreateEvent(userID int, eventType string, creationTime int64) (string, error) {
 	var (
-		err       error
-		event     *Models.Event
-		eventDate time.Time
-		user      *Models.User
-		ok        bool
+		err   error
+		event *Models.Event
+		user  *Models.User
+		ok    bool
 	)
 
 	if !createEventReqValidation(eventType) {
@@ -35,13 +33,13 @@ func CreateEvent(userID int, eventType string, creationTime int64) (string, erro
 		}
 	}
 
-	eventDate, err = Utility.ConvertTimestampTo_YYYY_MM_DD(creationTime)
-
-	if err != nil {
-		return "", err
+	ok, eventID := isDuplicateEvent(eventType, creationTime, userID)
+	if ok {
+		err = errors.New("Duplicate Event Details ")
+		return eventID, err
 	}
 
-	event = createNewEvent(eventType, eventDate, userID)
+	event = createNewEvent(eventType, creationTime, userID)
 
 	if _, err = addEventToUser(user, event); err != nil {
 		err = errors.New("Encountered Error While Adding Event To The User ")
@@ -50,8 +48,17 @@ func CreateEvent(userID int, eventType string, creationTime int64) (string, erro
 
 	return event.GetID(), nil
 }
+func isDuplicateEvent(eventType string, creationTime int64, userID int) (bool, string) {
+	events := DataHub.GetEventDataSetInstance().GetEvents()
 
-func createNewEvent(eventType string, creationTime time.Time, userID int) *Models.Event {
+	for _, event := range events {
+		if event.GetEventType() == eventType && event.GetUserID() == userID && event.GetCreationTime() == creationTime {
+			return true, event.GetID()
+		}
+	}
+	return false, ""
+}
+func createNewEvent(eventType string, creationTime int64, userID int) *Models.Event {
 	newEvent := Models.Event{}
 	newEventID, _ := Utility.GenerateUUID()
 	newEvent.SetID(newEventID)

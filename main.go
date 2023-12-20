@@ -1,6 +1,8 @@
 package main
 
-import "sugarBox/Handler"
+import (
+	"sugarBox/Handler"
+)
 
 func main() {
 	Handler.HandleAndExecuteInput()

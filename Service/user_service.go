@@ -6,6 +6,7 @@ import (
 	"sugarBox/DataHub"
 	"sugarBox/Models"
 	"sugarBox/Payload"
+	"sugarBox/Utility"
 	"time"
 )
 
@@ -44,11 +45,12 @@ func updateEventCounterForUser(user *Models.User, event *Models.Event) bool {
 		userEventCounter *Models.UserEventCounter
 		ok               bool
 	)
+	eventDate, _ := Utility.ConvertTimestampTo_YYYY_MM_DD(event.GetCreationTime())
 
-	userEventCounter, ok = isEventCounterAvailableForTheDate(user, event.GetCreationTime())
+	userEventCounter, ok = isEventCounterAvailableForTheDate(user, eventDate)
 
 	if !ok {
-		userEventCounter.SetDate(event.GetCreationTime())
+		userEventCounter.SetDate(eventDate)
 		user.SetUserEventCounter(userEventCounter)
 	}
 

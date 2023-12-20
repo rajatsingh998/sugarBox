@@ -2,6 +2,7 @@ package Service
 
 import (
 	"errors"
+	"sugarBox/DataHub"
 	"sugarBox/Models"
 	"sugarBox/Utility"
 	"time"
@@ -13,11 +14,12 @@ const (
 	CommentEventType             = "comment"
 )
 
-func CreateEvent(userID string, eventType string, creationTime int) (string, error) {
+func CreateEvent(userID int, eventType string, creationTime int64) (string, error) {
 	var (
 		err       error
 		event     *Models.Event
 		eventDate time.Time
+		user      *Models.User
 		ok        bool
 	)
 
@@ -26,8 +28,8 @@ func CreateEvent(userID string, eventType string, creationTime int) (string, err
 		return "", err
 	}
 
-	if ok, _ = getUserWithID(userID); !ok {
-		if _, err = createUser(userID); err != nil {
+	if ok, user = getUserWithID(userID); !ok {
+		if user, err = createUser(userID); err != nil {
 			err = errors.New("User Creation Failed ")
 			return "", err
 		}
@@ -39,9 +41,9 @@ func CreateEvent(userID string, eventType string, creationTime int) (string, err
 		return "", err
 	}
 
-	event = createNewEvent(eventType, eventDate)
+	event = createNewEvent(eventType, eventDate, userID)
 
-	if _, err = addEventToUser(userID, event); err != nil {
+	if _, err = addEventToUser(user, event); err != nil {
 		err = errors.New("Encountered Error While Adding Event To The User ")
 		return "", err
 	}
@@ -49,13 +51,15 @@ func CreateEvent(userID string, eventType string, creationTime int) (string, err
 	return event.GetID(), nil
 }
 
-func createNewEvent(eventType string, creationTime time.Time) *Models.Event {
+func createNewEvent(eventType string, creationTime time.Time, userID int) *Models.Event {
 	newEvent := Models.Event{}
 	newEventID, _ := Utility.GenerateUUID()
 	newEvent.SetID(newEventID)
 	newEvent.SetEventType(eventType)
 	newEvent.SetCreationTime(creationTime)
+	newEvent.SetUserID(userID)
 	eventDataSetInstance.SetEvent(&newEvent)
+
 	return &newEvent
 }
 
@@ -70,4 +74,15 @@ func createEventReqValidation(eventType string) bool {
 	default:
 		return false
 	}
+}
+
+func getEventByID(eventID string) (*Models.Event, bool) {
+	events := DataHub.GetEventDataSetInstance().GetEvents()
+
+	for _, event := range events {
+		if event.GetID() == eventID {
+			return event, true
+		}
+	}
+	return &Models.Event{}, false
 }

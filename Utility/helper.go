@@ -17,12 +17,12 @@ func GenerateUUID() (string, error) {
 	return newId.String(), nil
 }
 
-func ConvertTimestampTo_YYYY_MM_DD(timeStamp int) (time.Time, error) {
+func ConvertTimestampTo_YYYY_MM_DD(timeStamp int64) (time.Time, error) {
 	var (
 		err        error
 		parsedTime time.Time
 	)
-	epochTime := time.Unix(int64(timeStamp), 0)
+	epochTime := time.Unix(timeStamp, 0)
 	parsedTime, err = time.Parse("2006-01-02", epochTime.Format("2006-01-02"))
 	if err != nil {
 		err = errors.New("Encountered Error In Date Conversion ")

@@ -3,13 +3,13 @@ package Models
 import "sync"
 
 type User struct {
-	id                string
+	id                int
 	eventIds          []string
 	userEventCounters []*UserEventCounter
 	rwMutex           sync.RWMutex
 }
 
-func (u *User) GetID() string {
+func (u *User) GetID() int {
 	defer u.rwMutex.RUnlock()
 	u.rwMutex.RLock()
 	return u.id
@@ -32,7 +32,7 @@ func (u *User) SetUserEventCounter(userEventCounter *UserEventCounter) {
 	u.rwMutex.RLock()
 	u.userEventCounters = append(u.userEventCounters, userEventCounter)
 }
-func (u *User) SetID(id string) {
+func (u *User) SetID(id int) {
 	defer u.rwMutex.RUnlock()
 	u.rwMutex.RLock()
 	u.id = id

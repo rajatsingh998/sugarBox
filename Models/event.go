@@ -9,6 +9,7 @@ type Event struct {
 	id           string
 	eventType    string
 	creationTime time.Time
+	userID       int
 	rwMutex      sync.RWMutex
 }
 
@@ -18,6 +19,11 @@ func (e *Event) GetID() string {
 	return e.id
 }
 
+func (e *Event) GetUserID() int {
+	defer e.rwMutex.RUnlock()
+	e.rwMutex.RLock()
+	return e.userID
+}
 func (e *Event) GetEventType() string {
 	defer e.rwMutex.RUnlock()
 	e.rwMutex.RLock()
@@ -34,6 +40,12 @@ func (e *Event) SetID(id string) {
 	defer e.rwMutex.RUnlock()
 	e.rwMutex.RLock()
 	e.id = id
+}
+
+func (e *Event) SetUserID(userID int) {
+	defer e.rwMutex.RUnlock()
+	e.rwMutex.RLock()
+	e.userID = userID
 }
 
 func (e *Event) SetEventType(eventType string) {
